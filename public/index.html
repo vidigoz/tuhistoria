@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Destino Medieval</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #EDE3C8;
+    --parchment-dark: #E0D3AE;
+    --ink: #2B2118;
+    --ink-soft: #4A3F30;
+    --wax: #7A1F1F;
+    --wax-dark: #5E1717;
+    --moss: #5C6B4F;
+    --gold: #A9832B;
+    --line: rgba(43, 33, 24, 0.18);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at top left, rgba(169,131,43,0.08), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(122,31,31,0.06), transparent 55%),
+      var(--parchment);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .stage { width: 100%; max-width: 620px; }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 40px);
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .sub {
+    text-align: center;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 17px;
+    margin: 0 0 36px;
+  }
+
+  .divider {
+    width: 72px;
+    height: 3px;
+    background: var(--wax);
+    margin: 0 auto 36px;
+    border-radius: 2px;
+  }
+
+  form { display: flex; gap: 10px; margin-bottom: 8px; }
+
+  input[type="text"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    font-family: 'Spectral', serif;
+    font-size: 19px;
+    padding: 10px 4px;
+    color: var(--ink);
+    outline: none;
+  }
+
+  input[type="text"]::placeholder {
+    color: var(--ink-soft);
+    opacity: 0.55;
+    font-style: italic;
+  }
+
+  input[type="text"]:focus { border-bottom-color: var(--wax); }
+
+  button {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    background: var(--wax);
+    color: var(--parchment);
+    border: none;
+    padding: 0 26px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  button:hover:not(:disabled) { background: var(--wax-dark); }
+  button:active:not(:disabled) { transform: scale(0.98); }
+  button:disabled { opacity: 0.55; cursor: default; }
+
+  .error {
+    color: var(--wax);
+    font-style: italic;
+    font-size: 14px;
+    min-height: 20px;
+    margin: 8px 2px 0;
+  }
+
+  .card {
+    margin-top: 28px;
+    background: var(--parchment-dark);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 36px 30px 30px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 14px 30px -18px rgba(43,33,24,0.35);
+  }
+
+  .card.show { opacity: 1; transform: translateY(0); }
+
+  .seal {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
+    background: var(--wax);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  }
+
+  .seal::after { content: "✦"; color: var(--parchment); font-size: 16px; }
+
+  .card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    text-align: center;
+    margin: 10px 0 4px;
+  }
+
+  .card-tagline {
+    text-align: center;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin: 0 0 26px;
+  }
+
+  .rows { display: flex; flex-direction: column; gap: 18px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .row-label {
+    font-family: 'Cinzel', serif;
+    font-size: 12.5px;
+    color: var(--moss);
+    padding-top: 2px;
+  }
+
+  .row-value { font-size: 16.5px; line-height: 1.55; }
+
+  .loading {
+    text-align: center;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-top: 28px;
+    font-size: 15px;
+    display: none;
+  }
+
+  .loading.show { display: block; }
+
+  .again {
+    display: block;
+    margin: 22px auto 0;
+    background: transparent;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    padding: 9px 22px;
+  }
+
+  .again:hover { background: var(--ink); color: var(--parchment); }
+
+  @media (max-width: 460px) {
+    .row { grid-template-columns: 1fr; gap: 4px; }
+    .card { padding: 32px 20px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <h1>Tu Destino Medieval</h1>
+  <p class="sub">Escribe tu nombre. El Escribano decidirá el resto.</p>
+  <div class="divider"></div>
+
+  <form id="form">
+    <input type="text" id="nameInput" placeholder="Tu nombre..." autocomplete="off" />
+    <button type="submit" id="submitBtn">Revelar</button>
+  </form>
+  <div class="error" id="errorMsg"></div>
+  <p class="loading" id="loading">Consultando los pergaminos...</p>
+
+  <div class="card" id="card">
+    <div class="seal"></div>
+    <div class="card-name" id="cardName"></div>
+    <p class="card-tagline" id="cardTagline"></p>
+    <div class="rows">
+      <div class="row"><div class="row-label">Oficio</div><div class="row-value" id="oficio"></div></div>
+      <div class="row"><div class="row-label">Sopa favorita</div><div class="row-value" id="sopa"></div></div>
+      <div class="row"><div class="row-label">Su esposa</div><div class="row-value" id="esposa"></div></div>
+      <div class="row"><div class="row-label">Su muerte</div><div class="row-value" id="muerte"></div></div>
+    </div>
+    <button class="again" id="againBtn" type="button">Consultar otro nombre</button>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('form');
+const nameInput = document.getElementById('nameInput');
+const submitBtn = document.getElementById('submitBtn');
+const errorMsg = document.getElementById('errorMsg');
+const loading = document.getElementById('loading');
+const card = document.getElementById('card');
+const againBtn = document.getElementById('againBtn');
+
+async function generarDestino(nombre) {
+  const response = await fetch("/.netlify/functions/generar-destino", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nombre })
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Error desconocido");
+  }
+  return data;
+}
+
+function mostrarResultado(d) {
+  document.getElementById('cardName').textContent = d.nombre_medieval || "";
+  document.getElementById('cardTagline').textContent = d.tagline ? `"${d.tagline}"` : "";
+  document.getElementById('oficio').textContent = d.oficio || "";
+  document.getElementById('sopa').textContent = d.sopa || "";
+  document.getElementById('esposa').textContent = d.esposa || "";
+  document.getElementById('muerte').textContent = d.muerte || "";
+  card.classList.add('show');
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  const nombre = nameInput.value.trim();
+  errorMsg.textContent = "";
+
+  if (!nombre) {
+    errorMsg.textContent = "Escribe un nombre primero.";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  loading.classList.add('show');
+  card.classList.remove('show');
+
+  try {
+    const destino = await generarDestino(nombre);
+    mostrarResultado(destino);
+  } catch (err) {
+    console.error(err);
+    errorMsg.textContent = "Los pergaminos se atascaron. Intenta de nuevo.";
+  } finally {
+    loading.classList.remove('show');
+    submitBtn.disabled = false;
+  }
+}
+
+form.addEventListener('submit', handleSubmit);
+againBtn.addEventListener('click', () => {
+  card.classList.remove('show');
+  nameInput.value = "";
+  nameInput.focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>
