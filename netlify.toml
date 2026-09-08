@@ -5,3 +5,6 @@
 [dev]
   publish = "public"
   functions = "netlify/functions"
+
+[functions]
+  included_files = ["recursos/**"]

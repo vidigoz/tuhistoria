@@ -227,6 +227,8 @@
     <div class="card-name" id="cardName"></div>
     <p class="card-tagline" id="cardTagline"></p>
     <div class="rows">
+      <div class="row"><div class="row-label">Año</div><div class="row-value" id="anio"></div></div>
+      <div class="row"><div class="row-label">Lugar</div><div class="row-value" id="lugar"></div></div>
       <div class="row"><div class="row-label">Oficio</div><div class="row-value" id="oficio"></div></div>
       <div class="row"><div class="row-label">Sopa favorita</div><div class="row-value" id="sopa"></div></div>
       <div class="row"><div class="row-label">Su esposa</div><div class="row-value" id="esposa"></div></div>
@@ -262,6 +264,8 @@ async function generarDestino(nombre) {
 function mostrarResultado(d) {
   document.getElementById('cardName').textContent = d.nombre_medieval || "";
   document.getElementById('cardTagline').textContent = d.tagline ? `"${d.tagline}"` : "";
+  document.getElementById('anio').textContent = d.anio || "";
+  document.getElementById('lugar').textContent = d.lugar || "";
   document.getElementById('oficio').textContent = d.oficio || "";
   document.getElementById('sopa').textContent = d.sopa || "";
   document.getElementById('esposa').textContent = d.esposa || "";
