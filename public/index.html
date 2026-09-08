@@ -6,7 +6,8 @@
 <title>Tu Destino Medieval</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=UnifrakturMaguntia&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root {
     --parchment: #EDE3C8;
@@ -202,6 +203,16 @@
 
   .again:hover { background: var(--ink); color: var(--parchment); }
 
+  .card-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .card-actions .again { margin-top: 0; }
+
   @media (max-width: 460px) {
     .row { grid-template-columns: 1fr; gap: 4px; }
     .card { padding: 32px 20px 24px; }
@@ -211,8 +222,8 @@
 <body>
 
 <div class="stage">
-  <h1>Tu Destino Medieval</h1>
-  <p class="sub">Escribe tu nombre. El Escribano decidirá el resto.</p>
+  <h1>Tu Personaje del Medievo</h1>
+  <p class="sub">Escribe tu nombre. El vidigoztv decidirá el resto.</p>
   <div class="divider"></div>
 
   <form id="form">
@@ -231,10 +242,72 @@
       <div class="row"><div class="row-label">Lugar</div><div class="row-value" id="lugar"></div></div>
       <div class="row"><div class="row-label">Oficio</div><div class="row-value" id="oficio"></div></div>
       <div class="row"><div class="row-label">Sopa favorita</div><div class="row-value" id="sopa"></div></div>
-      <div class="row"><div class="row-label">Su esposa</div><div class="row-value" id="esposa"></div></div>
+      <div class="row"><div class="row-label" id="parejaLabel">Su esposa</div><div class="row-value" id="pareja"></div></div>
       <div class="row"><div class="row-label">Su muerte</div><div class="row-value" id="muerte"></div></div>
     </div>
-    <button class="again" id="againBtn" type="button">Consultar otro nombre</button>
+    <div class="card-actions">
+      <button class="again" id="descargarBtn" type="button">Descargar biografía</button>
+      <button class="again" id="againBtn" type="button">Consultar otro nombre</button>
+    </div>
+  </div>
+</div>
+
+<div id="bioTemplate" style="position:absolute; left:-9999px; top:0; width:820px; background:#e6d8b0; color:#3a2a18; font-family:'EB Garamond', Garamond, serif; font-size:15.5px; line-height:1.6; padding:0.42in; box-sizing:border-box;">
+  <div style="border:2px solid #8a6c3a; padding:20px 24px 24px; position:relative;">
+    <div style="border:1px solid #b09456; padding:20px 20px 22px;">
+
+      <h1 style="font-family:'UnifrakturMaguntia', serif; font-weight:400; font-size:46px; line-height:1.1; text-align:center; margin:0 0 4px; color:#3a2a18;">Biografía medieval</h1>
+
+      <div style="text-align:center; font-style:italic; font-size:19px; color:#5b452a; margin:0 0 6px;" id="bioNombre"></div>
+
+      <div style="text-align:center; letter-spacing:0.18em; text-transform:lowercase; font-size:12px; color:#7a2318;">www.vidigoztv.com</div>
+
+      <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin:14px 0 16px; color:#8a6c3a;">
+        <span style="display:block; height:1px; width:110px; background:#8a6c3a;"></span>
+        <span style="font-size:13px; letter-spacing:0.3em;">✦</span>
+        <span style="display:block; height:1px; width:110px; background:#8a6c3a;"></span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:130px minmax(0,1fr); gap:0 26px;">
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;">Año</div>
+        <div style="padding:10px 0;" id="bioAnio"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;">Lugar</div>
+        <div style="padding:10px 0;" id="bioLugar"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;">Oficio</div>
+        <div style="padding:10px 0;" id="bioOficio"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;">Sopa favorita</div>
+        <div style="padding:10px 0;" id="bioSopa"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;" id="bioParejaLabel">Su esposa</div>
+        <div style="padding:10px 0;" id="bioPareja"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+        <div style="padding:10px 0; font-variant:small-caps; letter-spacing:0.09em; font-size:14px; color:#7a2318;">Su muerte</div>
+        <div style="padding:10px 0;" id="bioMuerte"></div>
+
+        <div style="grid-column:1/-1; height:1px; background:#c0a468;"></div>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin:20px 0 0; color:#8a6c3a;">
+        <span style="display:block; height:1px; width:70px; background:#8a6c3a;"></span>
+        <span style="font-size:12px;">✦</span>
+        <span style="display:block; height:1px; width:70px; background:#8a6c3a;"></span>
+      </div>
+      <div style="display:flex; justify-content:center; margin-top:12px;">
+        <img src="/icono-vidigoztv.png" alt="Icono de vidigoztv" crossorigin="anonymous" style="width:66px; height:auto; display:block;" />
+      </div>
+      <div style="text-align:center; font-style:italic; font-size:13.5px; color:#6b543a; margin-top:8px;">Escrito por mano temblorosa en el scriptorium del condado</div>
+
+    </div>
   </div>
 </div>
 
@@ -246,6 +319,10 @@ const errorMsg = document.getElementById('errorMsg');
 const loading = document.getElementById('loading');
 const card = document.getElementById('card');
 const againBtn = document.getElementById('againBtn');
+const descargarBtn = document.getElementById('descargarBtn');
+const bioTemplate = document.getElementById('bioTemplate');
+
+let ultimoDestino = null;
 
 async function generarDestino(nombre) {
   const response = await fetch("/.netlify/functions/generar-destino", {
@@ -256,22 +333,72 @@ async function generarDestino(nombre) {
 
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error || "Error desconocido");
+    const err = new Error(data.error || "Error desconocido");
+    err.tipo = data.tipo;
+    throw err;
   }
   return data;
 }
 
 function mostrarResultado(d) {
+  ultimoDestino = d;
   document.getElementById('cardName').textContent = d.nombre_medieval || "";
   document.getElementById('cardTagline').textContent = d.tagline ? `"${d.tagline}"` : "";
   document.getElementById('anio').textContent = d.anio || "";
   document.getElementById('lugar').textContent = d.lugar || "";
   document.getElementById('oficio').textContent = d.oficio || "";
   document.getElementById('sopa').textContent = d.sopa || "";
-  document.getElementById('esposa').textContent = d.esposa || "";
+  document.getElementById('parejaLabel').textContent = d.pareja_label || "Su esposa";
+  document.getElementById('pareja').textContent = d.pareja || "";
   document.getElementById('muerte').textContent = d.muerte || "";
   card.classList.add('show');
   card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function llenarPlantillaBiografia(d) {
+  document.getElementById('bioNombre').textContent = d.nombre_medieval || "";
+  document.getElementById('bioAnio').textContent = d.anio || "";
+  document.getElementById('bioLugar').textContent = d.lugar || "";
+  document.getElementById('bioOficio').textContent = d.oficio || "";
+  document.getElementById('bioSopa').textContent = d.sopa || "";
+  document.getElementById('bioParejaLabel').textContent = d.pareja_label || "Su esposa";
+  document.getElementById('bioPareja').textContent = d.pareja || "";
+  document.getElementById('bioMuerte').textContent = d.muerte || "";
+}
+
+function nombreArchivo(d) {
+  const base = (d.nombre_medieval || "biografia-medieval")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${base || "biografia-medieval"}.png`;
+}
+
+async function descargarBiografia() {
+  if (!ultimoDestino || typeof html2canvas === "undefined") return;
+
+  const textoOriginal = descargarBtn.textContent;
+  descargarBtn.disabled = true;
+  descargarBtn.textContent = "Generando imagen...";
+
+  try {
+    llenarPlantillaBiografia(ultimoDestino);
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    const canvas = await html2canvas(bioTemplate, { scale: 2, backgroundColor: "#e6d8b0" });
+    const link = document.createElement('a');
+    link.download = nombreArchivo(ultimoDestino);
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    console.error(err);
+    errorMsg.textContent = "No se pudo generar la imagen. Intenta de nuevo.";
+  } finally {
+    descargarBtn.disabled = false;
+    descargarBtn.textContent = textoOriginal;
+  }
 }
 
 async function handleSubmit(e) {
@@ -293,7 +420,9 @@ async function handleSubmit(e) {
     mostrarResultado(destino);
   } catch (err) {
     console.error(err);
-    errorMsg.textContent = "Los pergaminos se atascaron. Intenta de nuevo.";
+    errorMsg.textContent = err.tipo === 'nombre_invalido'
+      ? err.message
+      : "Los pergaminos se atascaron. Intenta de nuevo.";
   } finally {
     loading.classList.remove('show');
     submitBtn.disabled = false;
@@ -301,6 +430,7 @@ async function handleSubmit(e) {
 }
 
 form.addEventListener('submit', handleSubmit);
+descargarBtn.addEventListener('click', descargarBiografia);
 againBtn.addEventListener('click', () => {
   card.classList.remove('show');
   nameInput.value = "";
