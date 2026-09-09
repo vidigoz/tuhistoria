@@ -1,9 +1,9 @@
 // netlify/functions/generar-destino.js
 //
 // Función serverless: recibe { nombre } desde el frontend, llama a la API
-// de Claude con la ANTHROPIC_API_KEY guardada en las variables de entorno
-// de Netlify (nunca expuesta al navegador), y devuelve el destino medieval
-// generado en JSON.
+// de DeepSeek (compatible con el formato de OpenAI) con la DEEPSEEK_API_KEY
+// guardada en las variables de entorno de Netlify (nunca expuesta al
+// navegador), y devuelve el destino medieval generado en JSON.
 
 const fs = require("fs");
 const path = require("path");
@@ -77,27 +77,29 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Falta el nombre" }) };
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "ANTHROPIC_API_KEY no está configurada en Netlify" })
+      body: JSON.stringify({ error: "DEEPSEEK_API_KEY no está configurada en Netlify" })
     };
   }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01"
+        "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "claude-sonnet-5",
+        model: "deepseek-chat",
         max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: `Nombre real: ${nombre}` }]
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `Nombre real: ${nombre}` }
+        ]
       })
     });
 
@@ -105,18 +107,18 @@ exports.handler = async (event) => {
       const errText = await response.text();
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: "Error de la API de Claude", detail: errText })
+        body: JSON.stringify({ error: "Error de la API de DeepSeek", detail: errText })
       };
     }
 
     const data = await response.json();
-    const textBlock = (data.content || []).find((b) => b.type === "text");
+    const texto = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
 
-    if (!textBlock) {
+    if (!texto) {
       return { statusCode: 502, body: JSON.stringify({ error: "Respuesta sin texto" }) };
     }
 
-    const clean = textBlock.text.replace(/```json|```/g, "").trim();
+    const clean = texto.replace(/```json|```/g, "").trim();
     const destino = JSON.parse(clean);
 
     if (destino.nombre_invalido) {
