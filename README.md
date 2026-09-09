@@ -10,12 +10,11 @@ La API key **nunca** viaja al navegador: el frontend llama a una Netlify Functio
 destino-medieval/
 ├── netlify.toml                        # config de Netlify (publish + functions)
 ├── package.json
-├── .env.example                        # plantilla, sin la key real
 ├── public/
 │   └── index.html                      # frontend (HTML/CSS/JS puro)
 └── netlify/
     └── functions/
-        └── generar-destino.js          # función serverless que llama a Claude
+        └── generar-destino.mjs         # función serverless (v2) que llama a Claude
 ```
 
 ## 1. Abrir en VS Code
@@ -35,19 +34,15 @@ npm install
 
 Esto instala `netlify-cli` como dependencia de desarrollo (para correr el sitio localmente con funciones incluidas).
 
-## 3. Configurar tu API key en local
+## 3. Credenciales de Claude
 
-```bash
-cp .env.example .env
-```
+En Netlify **no necesitas ninguna API key**: el AI Gateway inyecta las credenciales de Anthropic en el runtime de las funciones automáticamente. Importante: no definas tú mismo `ANTHROPIC_API_KEY` en las variables de entorno del proyecto, porque Netlify deja de inyectar las suyas si ya existe una.
 
-Edita `.env` y pon tu key real de Anthropic (la consigues en [console.anthropic.com](https://console.anthropic.com) → API Keys):
+Para desarrollo local, vincula la carpeta al proyecto de Netlify (`npx netlify link`) y el CLI te pasa las mismas credenciales. Si prefieres usar una key propia solo en local, ponla en un archivo `.env` (ya está en `.gitignore`, así que no se sube a GitHub por accidente):
 
 ```
-ANTHROPIC_API_KEY=sk-ant-tu-key-real
+ANTHROPIC_API_KEY=tu-key-de-anthropic
 ```
-
-`.env` ya está en `.gitignore`, así que no se sube a GitHub por accidente.
 
 ## 4. Correr en local
 
@@ -75,15 +70,12 @@ Si no tienes `gh` (GitHub CLI), simplemente crea el repo vacío en GitHub y sigu
 1. Entra a [app.netlify.com](https://app.netlify.com) → **Add new site** → **Import an existing project**.
 2. Conecta tu cuenta de GitHub y elige el repo `destino-medieval`.
 3. Netlify detecta `netlify.toml` automáticamente (publish: `public`, functions: `netlify/functions`) — no necesitas tocar el build command.
-4. Antes de desplegar (o justo después), ve a **Site settings → Environment variables** y agrega:
-   - Key: `ANTHROPIC_API_KEY`
-   - Value: tu key real
-5. Deploy site.
+4. Deploy site. No hay variables de entorno que configurar: el AI Gateway se encarga de las credenciales de Claude (requiere al menos un deploy de producción para activarse).
 
 Cada vez que hagas `git push`, Netlify vuelve a desplegar automáticamente.
 
 ## Notas
 
-- El modelo usado es `claude-sonnet-4-6`, definido en `netlify/functions/generar-destino.js`.
+- El modelo usado es `claude-sonnet-5`, definido en `netlify/functions/generar-destino.mjs`.
 - El prompt del sistema (el "carácter" del Escribano) también vive ahí — edítalo directamente si quieres ajustar el tono o el humor.
 - Si más adelante quieres que el generador evite repetir oficios/nombres ya usados (cruzando contra tu base de Notion), se puede agregar como un paso extra dentro de la función.
